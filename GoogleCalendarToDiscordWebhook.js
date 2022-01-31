@@ -28,6 +28,7 @@ function postEventsToChannel() {
       let event = events[i];
       let ISOStartDate = event.start.dateTime || event.start.date;
       let ISOEndDate = event.end.dateTime || event.end.date;
+	  let ISODescription = event.description || event.description;
 
       // The Calendar API's .list function will continously return events whose endDate has not been reached yet (timeMin is based on the event's end time)
       // Since this script is meant to run every minute, we have to skip these events ourselves
@@ -70,7 +71,7 @@ function postEventsToChannel() {
                     },
                     {
                       "name":"Description",
-                      "value":event.description ?? NO_VALUE_FOUND,
+                      "value":StripHtml(ISODescription) ?? NO_VALUE_FOUND,
                       "inline":false
                     }
                 ]
@@ -90,4 +91,11 @@ function postEventsToChannel() {
  */
 function ISOToDiscordUnix(isoString) {
   return `<t:${Math.floor(DateTime.fromISO(isoString).toSeconds())}:F>`
+}
+/** Strip html out of Description 
+ * 
+*/
+function StripHtml(html) {
+	var text = html.replace(/<[^>]+>/g, "\n")
+  return text;
 }
